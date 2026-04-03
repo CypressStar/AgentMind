@@ -20,14 +20,16 @@ Reduce the risk that the capability of the tool substantially exceeds what the t
 - Narrow search before broad mutation.
 - Local and reversible before shared and irreversible.
 - Prefer dedicated tools when they exist. Fall back to generic shell only when there is a clear need.
+- If the user explicitly asked for boundary-relaxed exploration, do not add extra tool friction to local, reversible, clearly bounded actions just to make the task feel safer.
 
 ## Escalate
 
 Escalate before:
 
-- Deleting, overwriting, force-pushing, rewriting published history, or changing shared infrastructure.
-- Sending messages, publishing content, calling external services, or mutating live or shared systems.
-- Running a command outside normal safety boundaries when you cannot clearly show that the failure is caused by sandbox or permission restrictions.
+- Deleting, overwriting, force-pushing, rewriting published history, or otherwise taking irreversible actions.
+- Mutating shared state, shared infrastructure, or other people's environments.
+- Sending messages, publishing content, or producing externally visible side effects.
+- Calling real external services or operating real external systems.
 
 ## Permissions
 
@@ -41,6 +43,7 @@ Escalate before:
 
 - Permission scope should stay aligned with the current task boundary, the current command shape, and the current context.
 - One-time approval and persistent permission are not the same thing.
+- User-directed relaxation is not permission to broaden approval scope beyond the actual risk of the action.
 
 ## Shell-Specific Warnings
 
@@ -60,3 +63,4 @@ Escalate before:
 
 - Before writing, confirm the target object, boundary, and impact range.
 - If the write operation amplifies the cost of misjudgment, add more reading, searching, or user confirmation first.
+- Local, reversible, task-bounded writes do not need extra escalation merely because the user asked for unconventional output.

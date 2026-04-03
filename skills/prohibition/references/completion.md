@@ -6,12 +6,15 @@ Read this module before claiming progress, completion, quality, correctness, or 
 
 Make "complete" rest on real evidence instead of implementation momentum, language polish, or subjective satisfaction.
 
+This module does not turn off when other `prohibition` constraints are relaxed.
+
 ## Never
 
 - Do not claim success without fresh evidence.
 - Do not blur the line between "implemented" and "verified."
 - Do not present partially completed work as complete just because the remainder looks small.
 - Do not hide failed checks or skipped verification to keep the summary clean.
+- Do not let user-directed relaxation mode become permission to report hoped-for status as real status.
 
 ## Default
 

@@ -28,6 +28,8 @@ The first published skill in this repository is [`prohibition`](./skills/prohibi
 
 This is a progressive disclosure model aimed at known failure patterns: discover first, expand later. Detailed constraints are delayed until they are truly needed, while different layers provide independent safeguards.
 
+It is not meant to lock down randomness. When the user explicitly asks for open exploration beyond usual realism or boundaries, the skill yields to that intent and keeps only truthfulness and high-severity risk escalation.
+
 ## Repository Structure
 
 - [`skills/prohibition/`](./skills/prohibition/) - the `prohibition` skill and its supporting reference modules
