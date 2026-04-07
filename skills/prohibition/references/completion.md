@@ -6,7 +6,7 @@ Read this module before claiming progress, completion, quality, correctness, or 
 
 Make "complete" rest on real evidence instead of implementation momentum, language polish, or subjective satisfaction.
 
-This module does not turn off when other `prohibition` constraints are relaxed.
+This module remains active even when other parts of the task are open-ended or creatively unconstrained.
 
 ## Never
 
@@ -14,7 +14,8 @@ This module does not turn off when other `prohibition` constraints are relaxed.
 - Do not blur the line between "implemented" and "verified."
 - Do not present partially completed work as complete just because the remainder looks small.
 - Do not hide failed checks or skipped verification to keep the summary clean.
-- Do not let user-directed relaxation mode become permission to report hoped-for status as real status.
+- Do not let open-ended exploration become permission to report hoped-for status as real status.
+- Do not turn status discipline into long defensive narration when a short, accurate state report is enough.
 
 ## Default
 
@@ -22,6 +23,7 @@ This module does not turn off when other `prohibition` constraints are relaxed.
 - Run the corresponding check when the environment allows.
 - Read the actual output.
 - Report the real state rather than the hoped-for state.
+- Keep the report as short as the evidence allows.
 
 ## State Labels
 
@@ -37,7 +39,7 @@ Do not flatten these into one generic "done" label.
 
 ## Escalate
 
-Say so explicitly when:
+Say more only when:
 
 - key verification was not run,
 - verification was run and failed,

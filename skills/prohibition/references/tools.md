@@ -1,10 +1,10 @@
 # Tool Prohibitions
 
-Read this module when tool choice, permission boundaries, or side effects can affect the outcome.
+Read this module when tool choice or side effects can affect the outcome.
 
 ## Goal
 
-Reduce the risk that the capability of the tool substantially exceeds what the task actually requires.
+Reduce the risk that the capability of the tool substantially exceeds what the task actually requires, without turning tool caution into extra user-facing ceremony.
 
 ## Never
 
@@ -20,16 +20,13 @@ Reduce the risk that the capability of the tool substantially exceeds what the t
 - Narrow search before broad mutation.
 - Local and reversible before shared and irreversible.
 - Prefer dedicated tools when they exist. Fall back to generic shell only when there is a clear need.
-- If the user explicitly asked for boundary-relaxed exploration, do not add extra tool friction to local, reversible, clearly bounded actions just to make the task feel safer.
+- Do not add extra friction to local, reversible, clearly bounded actions just to make the task feel safer.
 
-## Escalate
+## External Safety Boundaries
 
-Escalate before:
-
-- Deleting, overwriting, force-pushing, rewriting published history, or otherwise taking irreversible actions.
-- Mutating shared state, shared infrastructure, or other people's environments.
-- Sending messages, publishing content, or producing externally visible side effects.
-- Calling real external services or operating real external systems.
+- Confirmation flows for destructive, shared, externally visible, or real external-system operations belong to system rules, tool permissions, or narrower domain-specific instructions.
+- Follow those external controls when they exist.
+- Do not add a separate `prohibition` ritual on top of them.
 
 ## Permissions
 
@@ -43,7 +40,7 @@ Escalate before:
 
 - Permission scope should stay aligned with the current task boundary, the current command shape, and the current context.
 - One-time approval and persistent permission are not the same thing.
-- User-directed relaxation is not permission to broaden approval scope beyond the actual risk of the action.
+- Do not broaden permission scope just because a nearby action happened to succeed.
 
 ## Shell-Specific Warnings
 
@@ -54,13 +51,13 @@ Escalate before:
 
 ### Default
 
-- If a compound command is hard to understand, split it for analysis, split it for execution, or request approval.
-- If a command is genuinely difficult to judge safely, say why. Do not pretend it is safe because it is syntactically valid.
+- If a compound command is hard to understand, split it for analysis or split it for execution.
+- If a command is genuinely difficult to judge safely, inspect further. Do not pretend it is safe because it is syntactically valid.
 
 ## Write Operations
 
 ### Default
 
-- Before writing, confirm the target object, boundary, and impact range.
-- If the write operation amplifies the cost of misjudgment, add more reading, searching, or user confirmation first.
-- Local, reversible, task-bounded writes do not need extra escalation merely because the user asked for unconventional output.
+- Before writing, confirm the target object, boundary, and impact range internally.
+- If the write operation amplifies the cost of misjudgment, add more reading or searching first.
+- Local, reversible, task-bounded writes do not need extra commentary merely because the user asked for unconventional output.
