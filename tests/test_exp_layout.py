@@ -9,9 +9,13 @@ class ExpLayoutTests(unittest.TestCase):
     def test_spec_mentions_shared_domain_router_and_lazy_leaf_dirs(self):
         text = SPEC_PATH.read_text(encoding="utf-8")
         self.assertIn("EXP/domains/<work-domain>/TOC.md", text)
-        self.assertIn(
-            "Formal leaf directories under `resolved/` and `dead-ends/` are created lazily",
+        self.assertRegex(
             text,
+            r"(?s)leaf directories under .*`resolved/`.*`dead-ends/`.*created lazily",
+        )
+        self.assertRegex(
+            text,
+            r"(?s)`pending/events/<event-id>/`.*created lazily",
         )
 
 
