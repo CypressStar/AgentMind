@@ -14,6 +14,13 @@ DOMAIN_NAMES = [
     "research-and-analysis",
     "docs-and-content",
 ]
+FAILURE_SIGNAL_SOURCES = [
+    "system_or_runtime",
+    "test_or_validation",
+    "api_response",
+    "tool_execution",
+    "user_feedback",
+]
 
 REQUIRED_DIRS = [
     REPO_ROOT / "EXP",
@@ -63,6 +70,13 @@ class ExpLayoutTests(unittest.TestCase):
         lowered = text.lower()
         for kind in failure_kinds:
             self.assertIn(kind, lowered)
+
+        self.assertRegex(
+            text,
+            r"(?is)##\s+Failure\s+Signal\s+Sources\b",
+        )
+        for source in FAILURE_SIGNAL_SOURCES:
+            self.assertIn(source, lowered)
 
         for name in DOMAIN_NAMES:
             self.assertIn(name, lowered)
@@ -148,9 +162,11 @@ class ExpLayoutTests(unittest.TestCase):
         self.assertIn("EXP", readme_en)
         self.assertIn("skills/exp/SKILL.md", readme_en)
         self.assertIn("(./EXP/)", readme_en)
+        self.assertIn("(./skills/exp/)", readme_en)
         self.assertIn("EXP", readme_zh)
         self.assertIn("skills/exp/SKILL.md", readme_zh)
         self.assertIn("(./EXP/)", readme_zh)
+        self.assertIn("(./skills/exp/)", readme_zh)
 
 
 if __name__ == "__main__":

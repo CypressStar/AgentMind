@@ -22,6 +22,16 @@
 - `quality_failure`
 - `reasoning_failure`
 
+## Failure Signal Sources
+
+`failure_signal_source` is a closed taxonomy for where the failure signal came from. It complements `failure_kind` and `work_domain` during routing and does not replace either field.
+
+- `system_or_runtime`
+- `test_or_validation`
+- `api_response`
+- `tool_execution`
+- `user_feedback`
+
 ## Work Domains
 
 - [`api-integration`](domains/api-integration/TOC.md)

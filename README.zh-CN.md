@@ -47,5 +47,6 @@ AgentMind 是一个用于持续构建个人助手体系的仓库，核心目标�
 ## 仓库结构
 
 - [`skills/prohibition/`](./skills/prohibition/)：`prohibition` 技能及其配套参考模块
+- [`skills/exp/`](./skills/exp/)：`exp` 技能运行规则与检索行为定义
 - [`EXP/`](./EXP/)：EXP 路由文档、顶层 TOC 与 domain 导航
 - [`README.md`](./README.md)：英文版项目简介

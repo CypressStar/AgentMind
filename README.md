@@ -45,5 +45,6 @@ It separates runtime rules from experience content:
 ## Repository Structure
 
 - [`skills/prohibition/`](./skills/prohibition/) - the `prohibition` skill and its supporting reference modules
+- [`skills/exp/`](./skills/exp/) - the `exp` skill runtime rules and retrieval behavior
 - [`EXP/`](./EXP/): EXP routing docs, top-level TOCs, and domain navigation
 - [`README.zh-CN.md`](./README.zh-CN.md) - Chinese version of this introduction
