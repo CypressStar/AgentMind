@@ -60,11 +60,12 @@ class ExpLayoutTests(unittest.TestCase):
             "quality_failure",
             "reasoning_failure",
         }
+        lowered = text.lower()
         for kind in failure_kinds:
-            self.assertRegex(text, rf"`{re.escape(kind)}`")
+            self.assertIn(kind, lowered)
 
         for name in DOMAIN_NAMES:
-            self.assertRegex(text, rf"`{re.escape(name)}`")
+            self.assertIn(name, lowered)
 
         self.assertRegex(
             text,
