@@ -103,6 +103,15 @@ class ExpLayoutTests(unittest.TestCase):
             self.assertIn("## Dead Ends", text, msg=name)
             self.assertEqual(text.count(expected_header), 2, msg=name)
 
+    def test_exp_skill_captures_runtime_rules_without_duplicating_taxonomy(self):
+        text = (REPO_ROOT / "skills" / "exp" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("Use when a clear failure has already happened", text)
+        self.assertIn("Review mode", text)
+        self.assertIn("Do not read `pending` in review mode", text)
+        self.assertIn("Read at most three formal entries per failure cluster", text)
+        self.assertIn("../../EXP/EXP.md", text)
+        self.assertNotIn("## Failure Kinds", text)
+
 
 if __name__ == "__main__":
     unittest.main()
