@@ -49,6 +49,26 @@ class ExpLayoutTests(unittest.TestCase):
             r"(?s)`pending/events/<event-id>/`.*created lazily",
         )
 
+    def test_exp_md_contains_closed_taxonomy_and_manual_extension_rules(self):
+        text = (REPO_ROOT / "EXP" / "EXP.md").read_text(encoding="utf-8")
+        self.assertIn("## Failure Kinds", text)
+        self.assertIn("## Work Domains", text)
+        self.assertIn("runtime_error", text)
+        self.assertIn("docs-and-content", text)
+        self.assertIn("Only the user may add or revise taxonomy", text)
+
+    def test_top_level_tocs_route_by_domain(self):
+        for relative_path in ["resolved/TOC.md", "dead-ends/TOC.md"]:
+            text = (REPO_ROOT / "EXP" / relative_path).read_text(encoding="utf-8")
+            self.assertIn("| work_domain | toc | note |", text)
+            for name in DOMAIN_NAMES:
+                self.assertIn(name, text)
+
+    def test_pending_toc_explains_lazy_event_creation(self):
+        text = (REPO_ROOT / "EXP" / "pending" / "TOC.md").read_text(encoding="utf-8")
+        self.assertIn("events/<event-id>/", text)
+        self.assertIn("created only when a real unresolved item exists", text)
+
 
 if __name__ == "__main__":
     unittest.main()
