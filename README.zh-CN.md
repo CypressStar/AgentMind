@@ -32,7 +32,21 @@ AgentMind 是一个用于持续构建个人助手体系的仓库，核心目标�
 
 `prohibition` 现在被定位为一层内部 anti-regression 约束。它的目标是减少错误确定性、误报完成、范围漂移以及 safety theater 这类坏结果，而不是默认把开放探索压缩成保守答案，或把边界话术暴露给用户。
 
+### `exp`
+
+当前仓库中的第二个公开技能是 [`exp`](./skills/exp/SKILL.md)。
+
+`exp` 是一个被动触发、面向失败后的经验库。它不试图提前阻止模型犯错，而是在具体失败已经发生之后，帮助模型检索过往的已解决路径和可复用的 dead-end 经验，减少在同类问题上的重复试错成本。
+
+它把运行时规则和经验内容分开：
+
+- [`skills/exp/SKILL.md`](./skills/exp/SKILL.md)：触发条件、失败分簇、检索预算、`pending` 规则、晋升规则
+- [`EXP/EXP.md`](./EXP/EXP.md)：封闭分类法、导航入口、手动扩展说明
+- [`EXP/domains/`](./EXP/domains/)：resolved 和 dead-end 共用的 domain 级 TOC
+
 ## 仓库结构
 
 - [`skills/prohibition/`](./skills/prohibition/)：`prohibition` 技能及其配套参考模块
+- [`skills/exp/`](./skills/exp/)：`exp` 技能运行规则与检索行为定义
+- [`EXP/`](./EXP/)：EXP 路由文档、顶层 TOC 与 domain 导航
 - [`README.md`](./README.md)：英文版项目简介
