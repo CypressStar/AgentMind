@@ -105,12 +105,42 @@ class ExpLayoutTests(unittest.TestCase):
 
     def test_exp_skill_captures_runtime_rules_without_duplicating_taxonomy(self):
         text = (REPO_ROOT / "skills" / "exp" / "SKILL.md").read_text(encoding="utf-8")
-        self.assertIn("Use when a clear failure has already happened", text)
-        self.assertIn("Review mode", text)
+        lowered = text.lower()
+
+        expected_sections = [
+            "## Purpose",
+            "## Trigger Rules",
+            "## Failure-Handling Mode",
+            "## Review Mode",
+            "## Pending Rules",
+            "## Promotion Rules",
+            "## Forbidden Behaviors",
+        ]
+        for section in expected_sections:
+            with self.subTest(section=section):
+                self.assertIn(section, text)
+
+        # Durable runtime-rule checks.
         self.assertIn("Do not read `pending` in review mode", text)
         self.assertIn("Read at most three formal entries per failure cluster", text)
-        self.assertIn("../../EXP/EXP.md", text)
-        self.assertNotIn("## Failure Kinds", text)
+
+        # Taxonomy/navigation should be delegated to EXP.md, regardless of link style.
+        self.assertRegex(text, r"EXP/EXP\.md")
+
+        # SKILL.md should not enumerate concrete taxonomy values.
+        for kind in {
+            "runtime_error",
+            "test_failure",
+            "api_failure",
+            "tool_failure",
+            "quality_failure",
+            "reasoning_failure",
+        }:
+            with self.subTest(failure_kind=kind):
+                self.assertNotIn(kind, lowered)
+        for name in DOMAIN_NAMES:
+            with self.subTest(work_domain=name):
+                self.assertNotIn(name, lowered)
 
 
 if __name__ == "__main__":
