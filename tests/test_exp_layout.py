@@ -147,8 +147,10 @@ class ExpLayoutTests(unittest.TestCase):
         readme_zh = (REPO_ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
         self.assertIn("EXP", readme_en)
         self.assertIn("skills/exp/SKILL.md", readme_en)
+        self.assertIn("(./EXP/)", readme_en)
         self.assertIn("EXP", readme_zh)
         self.assertIn("skills/exp/SKILL.md", readme_zh)
+        self.assertIn("(./EXP/)", readme_zh)
 
 
 if __name__ == "__main__":
