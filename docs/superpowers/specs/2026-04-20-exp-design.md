@@ -175,27 +175,22 @@ EXP/
   EXP.md
   pending/
     TOC.md
-    events/
-      <event-id>/
-        event.json
-        attempts.jsonl
-        promotion.json
   resolved/
     TOC.md
-    <work-domain>/
-      TOC.md
-      <entry-id>.json
   dead-ends/
     TOC.md
+  domains/
     <work-domain>/
       TOC.md
-      <entry-id>.json
 ```
 
 Notes:
 
 - `archive/` does not exist.
 - `pending` holds only active unresolved items.
+- `EXP/domains/<work-domain>/TOC.md` is the shared navigation layer for both `resolved` and `dead-ends`.
+- Formal leaf directories under `resolved/` and `dead-ends/` are created lazily when the first real entry is written.
+- `pending/events/<event-id>/` is also created lazily when the first unresolved event is opened.
 - Closed events are deleted after promotion or abandonment.
 - Final experience history is left to `git`, not duplicated inside `EXP`.
 
