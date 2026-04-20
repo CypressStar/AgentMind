@@ -95,6 +95,14 @@ class ExpLayoutTests(unittest.TestCase):
             "Pending TOC should describe lazy creation tied to unresolved items.",
         )
 
+    def test_each_domain_toc_uses_the_shared_two_section_template(self):
+        expected_header = "| id | pattern_name | failure_kind | signals | note |"
+        for name in DOMAIN_NAMES:
+            text = (REPO_ROOT / "EXP" / "domains" / name / "TOC.md").read_text(encoding="utf-8")
+            self.assertIn("## Resolved", text, msg=name)
+            self.assertIn("## Dead Ends", text, msg=name)
+            self.assertEqual(text.count(expected_header), 2, msg=name)
+
 
 if __name__ == "__main__":
     unittest.main()
