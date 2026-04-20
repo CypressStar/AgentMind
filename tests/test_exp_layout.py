@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 import unittest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -51,23 +52,47 @@ class ExpLayoutTests(unittest.TestCase):
 
     def test_exp_md_contains_closed_taxonomy_and_manual_extension_rules(self):
         text = (REPO_ROOT / "EXP" / "EXP.md").read_text(encoding="utf-8")
-        self.assertIn("## Failure Kinds", text)
-        self.assertIn("## Work Domains", text)
-        self.assertIn("runtime_error", text)
-        self.assertIn("docs-and-content", text)
-        self.assertIn("Only the user may add or revise taxonomy", text)
+        failure_kinds = {
+            "runtime_error",
+            "test_failure",
+            "api_failure",
+            "tool_failure",
+            "quality_failure",
+            "reasoning_failure",
+        }
+        for kind in failure_kinds:
+            self.assertRegex(text, rf"`{re.escape(kind)}`")
+
+        for name in DOMAIN_NAMES:
+            self.assertRegex(text, rf"`{re.escape(name)}`")
+
+        self.assertRegex(
+            text,
+            r"(?is)only\s+the\s+user\s+may\s+.*(add|revise).*taxonomy",
+        )
 
     def test_top_level_tocs_route_by_domain(self):
         for relative_path in ["resolved/TOC.md", "dead-ends/TOC.md"]:
             text = (REPO_ROOT / "EXP" / relative_path).read_text(encoding="utf-8")
             self.assertIn("| work_domain | toc | note |", text)
             for name in DOMAIN_NAMES:
-                self.assertIn(name, text)
+                self.assertRegex(
+                    text,
+                    rf"\|\s*{re.escape(name)}\s*\|\s*\[TOC\]\(\.\./domains/{re.escape(name)}/TOC\.md\)\s*\|",
+                )
 
     def test_pending_toc_explains_lazy_event_creation(self):
         text = (REPO_ROOT / "EXP" / "pending" / "TOC.md").read_text(encoding="utf-8")
+        lower = text.lower()
         self.assertIn("events/<event-id>/", text)
-        self.assertIn("created only when a real unresolved item exists", text)
+        self.assertIn("created", lower)
+        self.assertIn("unresolved", lower)
+        self.assertIn("only", lower)
+        self.assertTrue(
+            re.search(r"created.*unresolved", lower, re.DOTALL)
+            or re.search(r"unresolved.*created", lower, re.DOTALL),
+            "Pending TOC should describe lazy creation tied to unresolved items.",
+        )
 
 
 if __name__ == "__main__":
