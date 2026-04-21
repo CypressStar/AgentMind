@@ -1,5 +1,7 @@
+import json
 import importlib
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -53,6 +55,44 @@ class InitExplibSupportTests(unittest.TestCase):
         finally:
             sys.modules.pop("_shared_templates", None)
             sys.path[:] = before_path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+class InitExplibScriptTests(unittest.TestCase):
+    def test_init_explib_creates_required_skeleton(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / ".explib"
+            cmd = [
+                sys.executable,
+                str(REPO_ROOT / "skills" / "exp" / "scripts" / "init_explib.py"),
+                "--root",
+                str(root),
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            payload = json.loads(result.stdout)
+            self.assertTrue((root / "EXP.md").is_file())
+            self.assertTrue((root / "domains" / "api-integration" / "toc.index.json").is_file())
+            self.assertTrue((root / "domains" / "api-integration" / "TOC.md").is_file())
+            self.assertFalse((root / "resolved" / "api-integration").exists())
+
+    def test_init_explib_check_mode_reports_missing_items_without_writing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / ".explib"
+            cmd = [
+                sys.executable,
+                str(REPO_ROOT / "skills" / "exp" / "scripts" / "init_explib.py"),
+                "--root",
+                str(root),
+                "--check",
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+            payload = json.loads(result.stdout)
+            self.assertEqual(result.returncode, 1)
+            self.assertFalse(root.exists())
+            self.assertIn(".explib/EXP.md", "\n".join(payload["missing_files"]))
 
 
 if __name__ == "__main__":
