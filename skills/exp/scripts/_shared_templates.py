@@ -1,4 +1,7 @@
-from ._shared_taxonomy import FAILURE_KINDS, FAILURE_SIGNAL_SOURCES, WORK_DOMAINS
+try:
+    from ._shared_taxonomy import FAILURE_KINDS, FAILURE_SIGNAL_SOURCES, WORK_DOMAINS
+except ImportError:  # Script-mode import from skills/exp/scripts/
+    from _shared_taxonomy import FAILURE_KINDS, FAILURE_SIGNAL_SOURCES, WORK_DOMAINS
 
 
 def render_exp_md() -> str:
