@@ -40,6 +40,10 @@ def main():
         root / "resolved" / "TOC.md": render_resolved_toc(),
         root / "dead-ends" / "TOC.md": render_dead_ends_toc(),
     }
+    required_domain_index_files = [
+        root / "domains" / domain / "toc.index.json" for domain in WORK_DOMAINS
+    ]
+    required_domain_toc_files = [root / "domains" / domain / "TOC.md" for domain in WORK_DOMAINS]
 
     created_dirs = []
     missing_dirs = []
@@ -53,6 +57,12 @@ def main():
             if not path.exists():
                 missing_dirs.append(path.as_posix())
         for path in required_files:
+            if not path.exists():
+                missing_files.append(path.as_posix())
+        for path in required_domain_index_files:
+            if not path.exists():
+                missing_files.append(path.as_posix())
+        for path in required_domain_toc_files:
             if not path.exists():
                 missing_files.append(path.as_posix())
         code = "ok" if not missing_dirs and not missing_files else "validation_failed"

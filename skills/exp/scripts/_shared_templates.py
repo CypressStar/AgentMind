@@ -56,12 +56,45 @@ def empty_domain_index(domain: str) -> dict:
 
 
 def render_pending_toc() -> str:
-    return "# Pending TOC\n"
+    return """# Pending TOC
+
+Use this file to track unresolved items that may be useful in later failure-handling.
+
+## Rules
+
+- Pending items are unresolved and should not be treated as proven fixes.
+- Keep entries concise so they are easy to scan during failure triage.
+- Prefer lazy event capture: only add an event when it materially improves future debugging.
+
+## Events
+
+See `pending/events/` for event snapshots captured only when needed.
+"""
 
 
 def render_resolved_toc() -> str:
-    return "# Resolved TOC\n"
+    domain_rows = "\n".join(
+        f"| `{domain}` | [TOC](../domains/{domain}/TOC.md) |" for domain in WORK_DOMAINS
+    )
+    return f"""# Resolved TOC
+
+Resolved patterns are routed by `work_domain`.
+
+| work_domain | domain_toc |
+| --- | --- |
+{domain_rows}
+"""
 
 
 def render_dead_ends_toc() -> str:
-    return "# Dead Ends TOC\n"
+    domain_rows = "\n".join(
+        f"| `{domain}` | [TOC](../domains/{domain}/TOC.md) |" for domain in WORK_DOMAINS
+    )
+    return f"""# Dead Ends TOC
+
+Dead ends are routed by `work_domain`.
+
+| work_domain | domain_toc |
+| --- | --- |
+{domain_rows}
+"""
