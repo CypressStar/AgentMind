@@ -37,6 +37,17 @@ def main():
             )
 
     for domain in WORK_DOMAINS:
+        toc_path = root / "domains" / domain / "TOC.md"
+        if not toc_path.is_file():
+            issues.append(
+                make_issue(
+                    "error",
+                    "missing_domain_toc",
+                    toc_path.as_posix(),
+                    "Domain TOC file is missing",
+                )
+            )
+
         index_path = root / "domains" / domain / "toc.index.json"
         if not index_path.is_file():
             issues.append(
@@ -45,6 +56,19 @@ def main():
                     "missing_toc_index",
                     index_path.as_posix(),
                     "Domain index file is missing",
+                )
+            )
+            continue
+
+        try:
+            json.loads(index_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            issues.append(
+                make_issue(
+                    "error",
+                    "invalid_index_json",
+                    index_path.as_posix(),
+                    "Domain index file is not valid JSON",
                 )
             )
 

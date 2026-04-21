@@ -28,7 +28,6 @@ def main():
     required_dirs = [
         root,
         root / "pending",
-        root / "pending" / "events",
         root / "resolved",
         root / "dead-ends",
         root / "domains",
@@ -56,14 +55,16 @@ def main():
         for path in required_dirs:
             if not path.exists():
                 missing_dirs.append(path.as_posix())
-        for path in required_files:
-            if not path.exists():
+        for path, content in required_files.items():
+            if not path.is_file():
+                missing_files.append(path.as_posix())
+            elif path.read_text(encoding="utf-8") != content:
                 missing_files.append(path.as_posix())
         for path in required_domain_index_files:
-            if not path.exists():
+            if not path.is_file():
                 missing_files.append(path.as_posix())
         for path in required_domain_toc_files:
-            if not path.exists():
+            if not path.is_file():
                 missing_files.append(path.as_posix())
         code = "ok" if not missing_dirs and not missing_files else "validation_failed"
         ok = code == "ok"
@@ -88,9 +89,11 @@ def main():
             created_dirs.append(path.as_posix())
 
     for path, content in required_files.items():
-        if not path.exists():
+        if not path.is_file():
             path.write_text(content, encoding="utf-8")
             created_files.append(path.as_posix())
+        elif path.read_text(encoding="utf-8") != content:
+            path.write_text(content, encoding="utf-8")
 
     for domain in WORK_DOMAINS:
         index_path = root / "domains" / domain / "toc.index.json"

@@ -60,6 +60,26 @@ class InitExplibSupportTests(unittest.TestCase):
         self.assertIn("## Resolved", text)
         self.assertIn("## Dead Ends", text)
 
+    def test_render_domain_toc_escapes_markdown_table_metacharacters(self):
+        text = render_domain_toc(
+            {
+                "domain": "api-integration",
+                "resolved": [
+                    {
+                        "id": "api-integration-resolved-001",
+                        "pattern_name": "Pipe | Name",
+                        "failure_kind": "api_failure",
+                        "signals": ["first|signal", "second\nsignal", "ignored"],
+                        "note": "line one\nline two | note",
+                    }
+                ],
+                "dead_ends": [],
+            }
+        )
+        self.assertIn("Pipe \\| Name", text)
+        self.assertIn("first\\|signal, second signal", text)
+        self.assertIn("line one line two \\| note", text)
+
     def test_shared_templates_imports_in_script_mode(self):
         scripts_dir = Path(__file__).resolve().parents[1] / "skills" / "exp" / "scripts"
         before_path = list(sys.path)
@@ -107,6 +127,7 @@ class InitExplibScriptTests(unittest.TestCase):
             self.assertEqual(result.returncode, 1)
             self.assertFalse(root.exists())
             self.assertIn(".explib/EXP.md", "\n".join(payload["missing_files"]))
+            self.assertNotIn(".explib/pending/events", "\n".join(payload["missing_dirs"]))
 
     def test_init_explib_rerun_preserves_rendered_domain_rows(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -184,6 +205,20 @@ class InitExplibScriptTests(unittest.TestCase):
             payload = json.loads(check.stdout)
             self.assertEqual(check.returncode, 1)
             self.assertIn(missing_toc.as_posix(), payload["missing_files"])
+
+    def test_init_explib_check_mode_reports_drifted_top_level_toc_content(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / ".explib"
+            init = self._run_init(root)
+            self.assertEqual(init.returncode, 0, msg=init.stderr)
+
+            drifted = root / "resolved" / "TOC.md"
+            drifted.write_text("# drifted\n", encoding="utf-8")
+
+            check = self._run_init(root, check=True)
+            payload = json.loads(check.stdout)
+            self.assertEqual(check.returncode, 1)
+            self.assertIn(drifted.as_posix(), payload["missing_files"])
 
 
 if __name__ == "__main__":
