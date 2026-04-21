@@ -41,12 +41,12 @@ AgentMind 是一个用于持续构建个人助手体系的仓库，核心目标�
 它把运行时规则和经验内容分开：
 
 - [`skills/exp/SKILL.md`](./skills/exp/SKILL.md)：触发条件、失败分簇、检索预算、`pending` 规则、晋升规则
-- [`EXP/EXP.md`](./EXP/EXP.md)：封闭分类法、导航入口、手动扩展说明
-- [`EXP/domains/`](./EXP/domains/)：resolved 和 dead-end 共用的 domain 级 TOC
+- [`.explib/EXP.md`](./.explib/EXP.md)：封闭分类法、导航入口、手动扩展说明
+- [`.explib/domains/`](./.explib/domains/)：resolved 和 dead-end 共用的 domain 级 TOC
 
 ## 仓库结构
 
 - [`skills/prohibition/`](./skills/prohibition/)：`prohibition` 技能及其配套参考模块
 - [`skills/exp/`](./skills/exp/)：`exp` 技能运行规则与检索行为定义
-- [`EXP/`](./EXP/)：EXP 路由文档、顶层 TOC 与 domain 导航
+- [`.explib/`](./.explib/)：经验库路由文档、顶层 TOC 与 domain 导航
 - [`README.md`](./README.md)：英文版项目简介

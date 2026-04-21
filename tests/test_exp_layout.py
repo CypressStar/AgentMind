@@ -4,6 +4,7 @@ import unittest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SPEC_PATH = REPO_ROOT / "docs" / "superpowers" / "specs" / "2026-04-20-exp-design.md"
+EXPLIB_ROOT = REPO_ROOT / ".explib"
 DOMAIN_NAMES = [
     "api-integration",
     "tool-usage",
@@ -23,19 +24,19 @@ FAILURE_SIGNAL_SOURCES = [
 ]
 
 REQUIRED_DIRS = [
-    REPO_ROOT / "EXP",
-    REPO_ROOT / "EXP" / "pending",
-    REPO_ROOT / "EXP" / "resolved",
-    REPO_ROOT / "EXP" / "dead-ends",
-    REPO_ROOT / "EXP" / "domains",
-] + [REPO_ROOT / "EXP" / "domains" / name for name in DOMAIN_NAMES]
+    EXPLIB_ROOT,
+    EXPLIB_ROOT / "pending",
+    EXPLIB_ROOT / "resolved",
+    EXPLIB_ROOT / "dead-ends",
+    EXPLIB_ROOT / "domains",
+] + [EXPLIB_ROOT / "domains" / name for name in DOMAIN_NAMES]
 
 REQUIRED_FILES = [
-    REPO_ROOT / "EXP" / "EXP.md",
-    REPO_ROOT / "EXP" / "pending" / "TOC.md",
-    REPO_ROOT / "EXP" / "resolved" / "TOC.md",
-    REPO_ROOT / "EXP" / "dead-ends" / "TOC.md",
-] + [REPO_ROOT / "EXP" / "domains" / name / "TOC.md" for name in DOMAIN_NAMES]
+    EXPLIB_ROOT / "EXP.md",
+    EXPLIB_ROOT / "pending" / "TOC.md",
+    EXPLIB_ROOT / "resolved" / "TOC.md",
+    EXPLIB_ROOT / "dead-ends" / "TOC.md",
+] + [EXPLIB_ROOT / "domains" / name / "TOC.md" for name in DOMAIN_NAMES]
 
 
 class ExpLayoutTests(unittest.TestCase):
@@ -47,7 +48,7 @@ class ExpLayoutTests(unittest.TestCase):
 
     def test_spec_mentions_shared_domain_router_and_lazy_leaf_dirs(self):
         text = SPEC_PATH.read_text(encoding="utf-8")
-        self.assertIn("EXP/domains/<work-domain>/TOC.md", text)
+        self.assertIn(".explib/domains/<work-domain>/TOC.md", text)
         self.assertRegex(
             text,
             r"(?s)leaf directories under .*`resolved/`.*`dead-ends/`.*created lazily",
@@ -58,7 +59,7 @@ class ExpLayoutTests(unittest.TestCase):
         )
 
     def test_exp_md_contains_closed_taxonomy_and_manual_extension_rules(self):
-        text = (REPO_ROOT / "EXP" / "EXP.md").read_text(encoding="utf-8")
+        text = (EXPLIB_ROOT / "EXP.md").read_text(encoding="utf-8")
         failure_kinds = {
             "runtime_error",
             "test_failure",
@@ -88,7 +89,7 @@ class ExpLayoutTests(unittest.TestCase):
 
     def test_top_level_tocs_route_by_domain(self):
         for relative_path in ["resolved/TOC.md", "dead-ends/TOC.md"]:
-            text = (REPO_ROOT / "EXP" / relative_path).read_text(encoding="utf-8")
+            text = (EXPLIB_ROOT / relative_path).read_text(encoding="utf-8")
             self.assertIn("| work_domain | toc | note |", text)
             for name in DOMAIN_NAMES:
                 self.assertRegex(
@@ -97,7 +98,7 @@ class ExpLayoutTests(unittest.TestCase):
                 )
 
     def test_pending_toc_explains_lazy_event_creation(self):
-        text = (REPO_ROOT / "EXP" / "pending" / "TOC.md").read_text(encoding="utf-8")
+        text = (EXPLIB_ROOT / "pending" / "TOC.md").read_text(encoding="utf-8")
         lower = text.lower()
         self.assertIn("events/<event-id>/", text)
         self.assertIn("created", lower)
@@ -112,7 +113,7 @@ class ExpLayoutTests(unittest.TestCase):
     def test_each_domain_toc_uses_the_shared_two_section_template(self):
         expected_header = "| id | pattern_name | failure_kind | signals | note |"
         for name in DOMAIN_NAMES:
-            text = (REPO_ROOT / "EXP" / "domains" / name / "TOC.md").read_text(encoding="utf-8")
+            text = (EXPLIB_ROOT / "domains" / name / "TOC.md").read_text(encoding="utf-8")
             self.assertIn("## Resolved", text, msg=name)
             self.assertIn("## Dead Ends", text, msg=name)
             self.assertEqual(text.count(expected_header), 2, msg=name)
@@ -138,8 +139,8 @@ class ExpLayoutTests(unittest.TestCase):
         self.assertIn("Do not read `pending` in review mode", text)
         self.assertIn("Read at most three formal entries per failure cluster", text)
 
-        # Taxonomy/navigation should be delegated to EXP.md, regardless of link style.
-        self.assertRegex(text, r"EXP/EXP\.md")
+        # Taxonomy/navigation should be delegated to .explib/EXP.md, regardless of link style.
+        self.assertRegex(text, r"\.explib/EXP\.md")
 
         # SKILL.md should not enumerate concrete taxonomy values.
         for kind in {
@@ -159,13 +160,13 @@ class ExpLayoutTests(unittest.TestCase):
     def test_readmes_reference_exp_skill_and_repository_layout(self):
         readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
         readme_zh = (REPO_ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
-        self.assertIn("EXP", readme_en)
+        self.assertIn(".explib", readme_en)
         self.assertIn("skills/exp/SKILL.md", readme_en)
-        self.assertIn("(./EXP/)", readme_en)
+        self.assertIn("(./.explib/)", readme_en)
         self.assertIn("(./skills/exp/)", readme_en)
-        self.assertIn("EXP", readme_zh)
+        self.assertIn(".explib", readme_zh)
         self.assertIn("skills/exp/SKILL.md", readme_zh)
-        self.assertIn("(./EXP/)", readme_zh)
+        self.assertIn("(./.explib/)", readme_zh)
         self.assertIn("(./skills/exp/)", readme_zh)
 
 

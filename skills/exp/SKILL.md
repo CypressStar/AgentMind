@@ -1,15 +1,15 @@
 ---
 name: exp
-description: Use when a clear failure has already happened and the goal is to reuse prior error experience from EXP. Also use when the user explicitly asks to review existing experience. Do not use this skill as proactive prevention.
+description: Use when a clear failure has already happened and the goal is to reuse prior error experience from `.explib`. Also use when the user explicitly asks to review existing experience. Do not use this skill as proactive prevention.
 ---
 
 # EXP
 
 ## Purpose
 
-Use this skill after a concrete failure to retrieve reusable solved paths or reusable dead ends from `EXP`.
+Use this skill after a concrete failure to retrieve reusable solved paths or reusable dead ends from `.explib`.
 
-Read taxonomy and navigation from [`../../EXP/EXP.md`](../../EXP/EXP.md).
+Read taxonomy and navigation from [`../../.explib/EXP.md`](../../.explib/EXP.md).
 
 This skill is passive. It does not preload experience during normal work.
 
@@ -25,7 +25,7 @@ This skill is passive. It does not preload experience during normal work.
 
 1. Detect the failure.
 2. Split the problem into failure clusters.
-3. For each independent cluster, route through `EXP.md`.
+3. For each independent cluster, route through `.explib/EXP.md`.
 4. Enter one `work_domain`.
 5. Read one relevant domain `TOC.md`.
 6. Read at most three formal entries per failure cluster.
@@ -36,7 +36,7 @@ This skill is passive. It does not preload experience during normal work.
 
 - Review mode is read-only.
 - Do not read `pending` in review mode.
-- Read only `EXP.md`, relevant TOCs, and formal entries.
+- Read only `.explib/EXP.md`, relevant TOCs, and formal entries.
 - If the user asks for all experience, default to a high-level summary by `work_domain`.
 - Expand specific entries only when the user asks for that domain or entry.
 
@@ -45,7 +45,7 @@ This skill is passive. It does not preload experience during normal work.
 - Create `pending` only after a clear classified failure.
 - Keep one active event per same-task ongoing issue.
 - Open a new event for a similar issue in a different task.
-- Re-read `EXP` only when the root-cause guess, `work_domain`, or retrieval evidence materially changes.
+- Re-read `.explib` only when the root-cause guess, `work_domain`, or retrieval evidence materially changes.
 
 ## Promotion Rules
 
