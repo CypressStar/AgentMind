@@ -129,3 +129,31 @@ class ValidateExplibTests(unittest.TestCase):
                 if issue["issue_code"] == "toc_render_out_of_sync"
             )
             self.assertEqual(target_issue["path"], drifted_toc.as_posix())
+
+    def test_validate_reports_invalid_index_entry_shape(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / ".explib"
+            init = self._run_init(root)
+            self.assertEqual(init.returncode, 0, msg=init.stderr)
+
+            invalid_index = root / "domains" / "api-integration" / "toc.index.json"
+            invalid_index.write_text(
+                json.dumps(
+                    {
+                        "domain": "api-integration",
+                        "resolved": ["bad"],
+                        "dead_ends": [],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = self._run_validate(root)
+            payload = json.loads(result.stdout)
+            self.assertEqual(result.returncode, 1)
+            target_issue = next(
+                issue
+                for issue in payload["issues"]
+                if issue["issue_code"] == "invalid_index_json"
+            )
+            self.assertEqual(target_issue["path"], invalid_index.as_posix())

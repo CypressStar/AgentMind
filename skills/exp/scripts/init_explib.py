@@ -72,10 +72,11 @@ def main():
                 continue
             try:
                 index_data = load_domain_index(index_path)
-            except json.JSONDecodeError:
+                rendered = render_domain_toc(index_data)
+            except (json.JSONDecodeError, KeyError, TypeError, AttributeError):
                 missing_files.append(index_path.as_posix())
                 continue
-            if path.read_text(encoding="utf-8") != render_domain_toc(index_data):
+            if path.read_text(encoding="utf-8") != rendered:
                 missing_files.append(path.as_posix())
         code = "ok" if not missing_dirs and not missing_files else "validation_failed"
         ok = code == "ok"

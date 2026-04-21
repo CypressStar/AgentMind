@@ -85,6 +85,19 @@ def main():
             )
             continue
 
+        if any(not isinstance(item, dict) for item in index_data["resolved"]) or any(
+            not isinstance(item, dict) for item in index_data["dead_ends"]
+        ):
+            issues.append(
+                make_issue(
+                    "error",
+                    "invalid_index_json",
+                    index_path.as_posix(),
+                    "Domain index file entries must be objects",
+                )
+            )
+            continue
+
         if toc_path.is_file():
             expected_toc = render_domain_toc(index_data)
             actual_toc = toc_path.read_text(encoding="utf-8")
