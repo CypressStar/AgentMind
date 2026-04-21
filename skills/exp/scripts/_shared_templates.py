@@ -58,43 +58,60 @@ def empty_domain_index(domain: str) -> dict:
 def render_pending_toc() -> str:
     return """# Pending TOC
 
-Use this file to track unresolved items that may be useful in later failure-handling.
+This file is a lightweight note for unresolved items only.
 
-## Rules
-
-- Pending items are unresolved and should not be treated as proven fixes.
-- Keep entries concise so they are easy to scan during failure triage.
-- Prefer lazy event capture: only add an event when it materially improves future debugging.
-
-## Events
-
-See `pending/events/` for event snapshots captured only when needed.
+- Active event folders live under `events/<event-id>/`.
+- `events/<event-id>/` is created only when a real unresolved item exists.
+- Review mode must not read `pending`.
+- Failure-handling mode may consult at most one similar `pending` item when formal entries do not match.
 """
 
 
 def render_resolved_toc() -> str:
+    domain_notes = {
+        "api-integration": "Solved API integration failures",
+        "tool-usage": "Solved tool invocation and tool result failures",
+        "code-implementation": "Solved implementation and code change failures",
+        "test-and-verification": "Solved test, build, and verification failures",
+        "frontend-ui": "Solved frontend structure and UI quality failures",
+        "repo-and-filesystem": "Solved repository and filesystem failures",
+        "research-and-analysis": "Solved research and analysis failures",
+        "docs-and-content": "Solved documentation and content failures",
+    }
     domain_rows = "\n".join(
-        f"| `{domain}` | [TOC](../domains/{domain}/TOC.md) |" for domain in WORK_DOMAINS
+        f"| {domain} | [TOC](../domains/{domain}/TOC.md) | {domain_notes[domain]} |"
+        for domain in WORK_DOMAINS
     )
     return f"""# Resolved TOC
 
-Resolved patterns are routed by `work_domain`.
+Use this file to route into the correct domain TOC for reusable solved experience.
 
-| work_domain | domain_toc |
-| --- | --- |
+| work_domain | toc | note |
+| --- | --- | --- |
 {domain_rows}
 """
 
 
 def render_dead_ends_toc() -> str:
+    domain_notes = {
+        "api-integration": "Dead-end API integration paths",
+        "tool-usage": "Dead-end tool usage paths",
+        "code-implementation": "Dead-end implementation paths",
+        "test-and-verification": "Dead-end testing and verification paths",
+        "frontend-ui": "Dead-end frontend and UI paths",
+        "repo-and-filesystem": "Dead-end repository and filesystem paths",
+        "research-and-analysis": "Dead-end research and analysis paths",
+        "docs-and-content": "Dead-end documentation and content paths",
+    }
     domain_rows = "\n".join(
-        f"| `{domain}` | [TOC](../domains/{domain}/TOC.md) |" for domain in WORK_DOMAINS
+        f"| {domain} | [TOC](../domains/{domain}/TOC.md) | {domain_notes[domain]} |"
+        for domain in WORK_DOMAINS
     )
     return f"""# Dead Ends TOC
 
-Dead ends are routed by `work_domain`.
+Use this file to route into the correct domain TOC for reusable stop-sign experience.
 
-| work_domain | domain_toc |
-| --- | --- |
+| work_domain | toc | note |
+| --- | --- | --- |
 {domain_rows}
 """

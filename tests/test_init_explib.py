@@ -43,10 +43,10 @@ class InitExplibSupportTests(unittest.TestCase):
         resolved_text = render_resolved_toc()
         dead_ends_text = render_dead_ends_toc()
 
-        self.assertIn("track unresolved items", pending_text)
-        self.assertIn("lazy event capture", pending_text)
-        self.assertIn("| work_domain | domain_toc |", resolved_text)
-        self.assertIn("| work_domain | domain_toc |", dead_ends_text)
+        self.assertIn("events/<event-id>/", pending_text)
+        self.assertIn("Review mode must not read `pending`.", pending_text)
+        self.assertIn("| work_domain | toc | note |", resolved_text)
+        self.assertIn("| work_domain | toc | note |", dead_ends_text)
 
     def test_render_domain_toc_uses_generated_header_and_sections(self):
         text = render_domain_toc(
