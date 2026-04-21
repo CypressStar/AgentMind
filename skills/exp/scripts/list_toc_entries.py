@@ -35,20 +35,16 @@ def main():
     if args.failure_kind:
         entries = [item for item in entries if item["failure_kind"] == args.failure_kind]
 
-    print(
-        json.dumps(
-            {
-                "ok": True,
-                "code": "ok",
-                "action": "list_toc_entries",
-                "root": root.as_posix(),
-                "domain": args.domain,
-                "section": args.section,
-                "filters": {"failure_kind": args.failure_kind},
-                "entries": entries,
-            }
-        )
-    )
+    print(json.dumps({
+        "ok": True,
+        "code": "ok",
+        "action": "list_toc_entries",
+        "root": root.as_posix(),
+        "domain": args.domain,
+        "section": args.section,
+        "filters": {"failure_kind": args.failure_kind},
+        "entries": entries,
+    }))
     return 0
 
 
