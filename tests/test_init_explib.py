@@ -118,6 +118,7 @@ class InitExplibScriptTests(unittest.TestCase):
             self.assertTrue((root / "domains" / "api-integration" / "toc.index.json").is_file())
             self.assertTrue((root / "domains" / "api-integration" / "TOC.md").is_file())
             self.assertFalse((root / "resolved" / "api-integration").exists())
+            self.assertFalse((root / "pending" / "events").exists())
 
     def test_init_explib_check_mode_reports_missing_items_without_writing(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -213,6 +214,20 @@ class InitExplibScriptTests(unittest.TestCase):
             self.assertEqual(init.returncode, 0, msg=init.stderr)
 
             drifted = root / "resolved" / "TOC.md"
+            drifted.write_text("# drifted\n", encoding="utf-8")
+
+            check = self._run_init(root, check=True)
+            payload = json.loads(check.stdout)
+            self.assertEqual(check.returncode, 1)
+            self.assertIn(drifted.as_posix(), payload["missing_files"])
+
+    def test_init_explib_check_mode_reports_drifted_domain_toc_content(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / ".explib"
+            init = self._run_init(root)
+            self.assertEqual(init.returncode, 0, msg=init.stderr)
+
+            drifted = root / "domains" / "api-integration" / "TOC.md"
             drifted.write_text("# drifted\n", encoding="utf-8")
 
             check = self._run_init(root, check=True)

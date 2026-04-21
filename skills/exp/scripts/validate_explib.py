@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from _shared_paths import get_root
+from _shared_render import render_domain_toc
 from _shared_taxonomy import WORK_DOMAINS
 from _shared_validate import make_issue
 
@@ -61,7 +62,7 @@ def main():
             continue
 
         try:
-            json.loads(index_path.read_text(encoding="utf-8"))
+            index_data = json.loads(index_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             issues.append(
                 make_issue(
@@ -71,6 +72,31 @@ def main():
                     "Domain index file is not valid JSON",
                 )
             )
+            continue
+
+        if not isinstance(index_data, dict) or not isinstance(index_data.get("domain"), str) or not isinstance(index_data.get("resolved"), list) or not isinstance(index_data.get("dead_ends"), list):
+            issues.append(
+                make_issue(
+                    "error",
+                    "invalid_index_json",
+                    index_path.as_posix(),
+                    "Domain index file does not match the expected schema",
+                )
+            )
+            continue
+
+        if toc_path.is_file():
+            expected_toc = render_domain_toc(index_data)
+            actual_toc = toc_path.read_text(encoding="utf-8")
+            if actual_toc != expected_toc:
+                issues.append(
+                    make_issue(
+                        "error",
+                        "toc_render_out_of_sync",
+                        toc_path.as_posix(),
+                        "Domain TOC does not match the rendered index",
+                    )
+                )
 
     payload = {
         "ok": not issues,

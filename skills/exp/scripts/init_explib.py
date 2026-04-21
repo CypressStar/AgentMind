@@ -63,8 +63,19 @@ def main():
         for path in required_domain_index_files:
             if not path.is_file():
                 missing_files.append(path.as_posix())
-        for path in required_domain_toc_files:
+        for domain, path in zip(WORK_DOMAINS, required_domain_toc_files):
             if not path.is_file():
+                missing_files.append(path.as_posix())
+                continue
+            index_path = root / "domains" / domain / "toc.index.json"
+            if not index_path.is_file():
+                continue
+            try:
+                index_data = load_domain_index(index_path)
+            except json.JSONDecodeError:
+                missing_files.append(index_path.as_posix())
+                continue
+            if path.read_text(encoding="utf-8") != render_domain_toc(index_data):
                 missing_files.append(path.as_posix())
         code = "ok" if not missing_dirs and not missing_files else "validation_failed"
         ok = code == "ok"
@@ -97,7 +108,7 @@ def main():
 
     for domain in WORK_DOMAINS:
         index_path = root / "domains" / domain / "toc.index.json"
-        if not index_path.exists():
+        if not index_path.is_file():
             save_domain_index(index_path, empty_domain_index(domain))
             created_index_files.append(index_path.as_posix())
         index_data = load_domain_index(index_path)
