@@ -53,3 +53,15 @@ Only the user may add or revise taxonomy. If taxonomy changes, update this file,
 
 def empty_domain_index(domain: str) -> dict:
     return {"domain": domain, "resolved": [], "dead_ends": []}
+
+
+def render_pending_toc() -> str:
+    return "# Pending TOC\n"
+
+
+def render_resolved_toc() -> str:
+    return "# Resolved TOC\n"
+
+
+def render_dead_ends_toc() -> str:
+    return "# Dead Ends TOC\n"

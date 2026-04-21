@@ -5,22 +5,13 @@ from _shared_paths import get_root
 from _shared_render import render_domain_toc
 from _shared_taxonomy import WORK_DOMAINS
 from _shared_templates import (
+    render_dead_ends_toc,
     empty_domain_index,
     render_exp_md,
+    render_pending_toc,
+    render_resolved_toc,
 )
 from _shared_index import load_domain_index, save_domain_index
-
-
-def render_pending_toc() -> str:
-    return "# Pending TOC\n"
-
-
-def render_resolved_toc() -> str:
-    return "# Resolved TOC\n"
-
-
-def render_dead_ends_toc() -> str:
-    return "# Dead Ends TOC\n"
 
 
 def parse_args():
