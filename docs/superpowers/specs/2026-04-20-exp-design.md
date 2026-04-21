@@ -12,8 +12,8 @@ Approved design draft for the first version of the `EXP` skill and repository la
 
 The design uses progressive disclosure:
 
-1. [`EXP.md`](../../../EXP/EXP.md) routes the model into the right classification branch.
-2. Domain [`TOC.md`](../../../EXP/) files narrow retrieval to a small set of candidates.
+1. [`EXP.md`](../../../.explib/EXP.md) routes the model into the right classification branch.
+2. Domain [`TOC.md`](../../../.explib/) files narrow retrieval to a small set of candidates.
 3. Final experience entries in `json` carry the reusable result.
 
 Unresolved problems may temporarily exist as active `pending` records. Once a problem is closed, only the final result remains. Intermediate process files are deleted.
@@ -98,7 +98,7 @@ Budget applies per independent failure cluster, not per user turn.
 
 For one cluster:
 
-- Read [`EXP.md`](../../../EXP/EXP.md)
+- Read [`EXP.md`](../../../.explib/EXP.md)
 - Enter only one `work_domain`
 - Read only one relevant domain `TOC.md`
 - Read at most three formal entries
@@ -171,7 +171,7 @@ Rules:
 ## Directory Layout
 
 ```text
-EXP/
+.explib/
   EXP.md
   pending/
     TOC.md
@@ -188,7 +188,7 @@ Notes:
 
 - `archive/` does not exist.
 - `pending` holds only active unresolved items.
-- `EXP/domains/<work-domain>/TOC.md` is the shared navigation layer for both `resolved` and `dead-ends`.
+- `.explib/domains/<work-domain>/TOC.md` is the shared navigation layer for both `resolved` and `dead-ends`.
 - Formal leaf directories under `resolved/` and `dead-ends/` are created lazily when the first real entry is written.
 - `pending/events/<event-id>/` is also created lazily when the first unresolved event is opened.
 - Closed events are deleted after promotion or abandonment.
@@ -496,7 +496,7 @@ Owns runtime behavior:
 - closing rules
 - forbidden behaviors
 
-### `EXP/EXP.md`
+### `.explib/EXP.md`
 
 Owns static navigation and taxonomy:
 
@@ -517,7 +517,7 @@ Only the user may manually add or revise `failure_kind` and `work_domain`.
 
 If taxonomy is extended, update all of:
 
-- [`EXP/EXP.md`](../../../EXP/EXP.md)
+- [`.explib/EXP.md`](../../../.explib/EXP.md)
 - relevant top-level `TOC.md`
 - relevant domain directories
 - `skills/exp/SKILL.md` rules if routing behavior changes

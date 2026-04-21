@@ -39,12 +39,12 @@ The second public skill in this repository is [`exp`](./skills/exp/SKILL.md).
 It separates runtime rules from experience content:
 
 - [`skills/exp/SKILL.md`](./skills/exp/SKILL.md): runtime trigger rules, failure triage, retrieval budget, `pending` rules, and promotion rules
-- [`EXP/EXP.md`](./EXP/EXP.md): closed taxonomy, navigation, and manual extension rules
-- [`EXP/domains/`](./EXP/domains/): shared domain TOCs for resolved and dead-end experience
+- [`.explib/EXP.md`](./.explib/EXP.md): closed taxonomy, navigation, and manual extension rules
+- [`.explib/domains/`](./.explib/domains/): shared domain TOCs for resolved and dead-end experience
 
 ## Repository Structure
 
 - [`skills/prohibition/`](./skills/prohibition/) - the `prohibition` skill and its supporting reference modules
 - [`skills/exp/`](./skills/exp/) - the `exp` skill runtime rules and retrieval behavior
-- [`EXP/`](./EXP/): EXP routing docs, top-level TOCs, and domain navigation
+- [`.explib/`](./.explib/): experience-library routing docs, top-level TOCs, and domain navigation
 - [`README.zh-CN.md`](./README.zh-CN.md) - Chinese version of this introduction
