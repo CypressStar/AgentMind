@@ -24,4 +24,12 @@ class ValidateExplibTests(unittest.TestCase):
             payload = json.loads(result.stdout)
             self.assertEqual(result.returncode, 1)
             self.assertEqual(payload["code"], "validation_failed")
-            self.assertTrue(any(issue["issue_code"] == "missing_required_file" for issue in payload["issues"]))
+            target_issue = next(
+                issue
+                for issue in payload["issues"]
+                if issue["issue_code"] == "missing_required_file"
+            )
+            self.assertEqual(target_issue["level"], "error")
+            self.assertTrue(target_issue["blocking"])
+            self.assertEqual(target_issue["ai_action"], "run_init")
+            self.assertEqual(target_issue["path"], (root / "EXP.md").as_posix())

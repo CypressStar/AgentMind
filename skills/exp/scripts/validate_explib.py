@@ -25,7 +25,7 @@ def main():
         root / "dead-ends" / "TOC.md",
     ]
     for path in required_files:
-        if not path.exists():
+        if not path.is_file():
             issues.append(
                 make_issue(
                     "error",
@@ -38,7 +38,7 @@ def main():
 
     for domain in WORK_DOMAINS:
         index_path = root / "domains" / domain / "toc.index.json"
-        if not index_path.exists():
+        if not index_path.is_file():
             issues.append(
                 make_issue(
                     "error",
