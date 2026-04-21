@@ -112,13 +112,36 @@ def main():
         if not index_path.is_file():
             save_domain_index(index_path, empty_domain_index(domain))
             created_index_files.append(index_path.as_posix())
-        index_data = load_domain_index(index_path)
+        try:
+            index_data = load_domain_index(index_path)
+            rendered = render_domain_toc(index_data)
+        except (json.JSONDecodeError, KeyError, TypeError, AttributeError):
+            missing_files.append(index_path.as_posix())
+            continue
         toc_path = root / "domains" / domain / "TOC.md"
-        rendered = render_domain_toc(index_data)
         current = toc_path.read_text(encoding="utf-8") if toc_path.exists() else None
         if current != rendered:
             toc_path.write_text(rendered, encoding="utf-8")
             rendered_tocs.append(toc_path.as_posix())
+
+    if missing_files:
+        print(
+            json.dumps(
+                {
+                    "ok": False,
+                    "code": "validation_failed",
+                    "action": "init_explib",
+                    "root": root.as_posix(),
+                    "mode": "init",
+                    "created_dirs": created_dirs,
+                    "created_files": created_files,
+                    "created_index_files": created_index_files,
+                    "rendered_tocs": rendered_tocs,
+                    "missing_files": missing_files,
+                }
+            )
+        )
+        return 1
 
     print(
         json.dumps(

@@ -258,6 +258,30 @@ class InitExplibScriptTests(unittest.TestCase):
             self.assertEqual(check.returncode, 1)
             self.assertIn(invalid_index.as_posix(), payload["missing_files"])
 
+    def test_init_explib_init_mode_reports_invalid_index_shape_without_crashing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / ".explib"
+            init = self._run_init(root)
+            self.assertEqual(init.returncode, 0, msg=init.stderr)
+
+            invalid_index = root / "domains" / "api-integration" / "toc.index.json"
+            invalid_index.write_text(
+                json.dumps(
+                    {
+                        "domain": "api-integration",
+                        "resolved": ["bad"],
+                        "dead_ends": [],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            rerun = self._run_init(root)
+            payload = json.loads(rerun.stdout)
+            self.assertEqual(rerun.returncode, 1)
+            self.assertEqual(payload["code"], "validation_failed")
+            self.assertIn(invalid_index.as_posix(), payload["missing_files"])
+
 
 if __name__ == "__main__":
     unittest.main()
