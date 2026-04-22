@@ -17,12 +17,21 @@ This skill is passive. It does not preload experience during normal work.
 
 Use the scripts in [`scripts/`](./scripts/) as the execution layer for `.explib`.
 
+`.explib` belongs to the active project root, not to the skill installation directory.
+When scripts are available, pass or infer the current project root and operate on that project's `.explib`.
+
 Default order:
 
-1. Run `init_explib.py` to create or repair the fixed `.explib` skeleton.
+1. Run `init_explib.py` to create or repair the fixed `.explib` skeleton in the active project.
 2. Run `validate_explib.py` before relying on library state.
 3. For retrieval, use `list_toc_entries.py` to get structured candidates.
 4. After choosing a candidate, use `get_entry.py` for the final entry payload.
+5. For write-path actions, use the dedicated scripts:
+   - `create_pending.py`
+   - `append_attempt.py`
+   - `promote_pending.py`
+   - `abandon_pending.py`
+   - `delete_dead_end.py`
 
 Do not treat `TOC.md` as the primary machine-readable source when the scripts are available.
 Use script output first, and fall back to direct file reading only when needed.
@@ -47,11 +56,8 @@ If `validate_explib.py` reports blocking issues, stop relying on `.explib` until
 6. Read at most three formal entries per failure cluster.
 7. Use `get_entry.py` for the chosen entry payload.
 8. If no formal hit exists, read at most one similar `pending` item directly.
-9. Reuse the fix or stop a dead path.
-
-Note:
-- Scripted write-path operations for `pending`, promotion, abandonment, and dead-end deletion are not available yet.
-- Do not improvise partial write automation in this skill until those scripts exist.
+9. If new pending state must be created or updated, use the write-path scripts instead of ad-hoc file edits.
+10. Reuse the fix or stop a dead path.
 
 ## Review Mode
 
@@ -67,8 +73,7 @@ Note:
 - Keep one active event per same-task ongoing issue.
 - Open a new event for a similar issue in a different task.
 - Re-read `.explib` only when the root-cause guess, `work_domain`, or retrieval evidence materially changes.
-- Until write-path scripts exist, do not treat `pending` creation or updates as an automated script workflow.
-- If pending state must be discussed, keep it conceptual rather than pretending the script layer already supports it.
+- Use `create_pending.py` and `append_attempt.py` for pending-state writes when automation is appropriate.
 
 ## Promotion Rules
 

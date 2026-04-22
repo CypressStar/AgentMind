@@ -25,3 +25,26 @@ WORK_DOMAINS = [
     "research-and-analysis",
     "docs-and-content",
 ]
+
+REF_TYPES = [
+    "official_doc",
+    "api_error",
+    "tool_limit",
+    "user_constraint",
+    "test_result",
+]
+
+FEEDBACK_HINTS = [
+    "not_resolved",
+    "wrong_direction",
+    "misunderstood_request",
+    "too_generic",
+    "low_quality",
+    "format_or_output_mismatch",
+]
+
+ATTEMPT_RESULTS = [
+    "failed",
+    "passed",
+    "signal",
+]

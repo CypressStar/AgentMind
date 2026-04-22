@@ -97,12 +97,12 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 class InitExplibScriptTests(unittest.TestCase):
-    def _run_init(self, root: Path, check: bool = False) -> subprocess.CompletedProcess:
+    def _run_init(self, project_root: Path, check: bool = False) -> subprocess.CompletedProcess:
         cmd = [
             sys.executable,
             str(REPO_ROOT / "skills" / "exp" / "scripts" / "init_explib.py"),
-            "--root",
-            str(root),
+            "--project-root",
+            str(project_root),
         ]
         if check:
             cmd.append("--check")
@@ -110,10 +110,14 @@ class InitExplibScriptTests(unittest.TestCase):
 
     def test_init_explib_creates_required_skeleton(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / ".explib"
-            result = self._run_init(root)
+            project_root = Path(tmp) / "project"
+            project_root.mkdir()
+            root = project_root / ".explib"
+            result = self._run_init(project_root)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             payload = json.loads(result.stdout)
+            self.assertEqual(payload["project_root"], project_root.as_posix())
+            self.assertEqual(payload["explib_root"], root.as_posix())
             self.assertTrue((root / "EXP.md").is_file())
             self.assertTrue((root / "domains" / "api-integration" / "toc.index.json").is_file())
             self.assertTrue((root / "domains" / "api-integration" / "TOC.md").is_file())
@@ -122,18 +126,24 @@ class InitExplibScriptTests(unittest.TestCase):
 
     def test_init_explib_check_mode_reports_missing_items_without_writing(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / ".explib"
-            result = self._run_init(root, check=True)
+            project_root = Path(tmp) / "project"
+            project_root.mkdir()
+            root = project_root / ".explib"
+            result = self._run_init(project_root, check=True)
             payload = json.loads(result.stdout)
             self.assertEqual(result.returncode, 1)
             self.assertFalse(root.exists())
+            self.assertEqual(payload["project_root"], project_root.as_posix())
+            self.assertEqual(payload["explib_root"], root.as_posix())
             self.assertIn(".explib/EXP.md", "\n".join(payload["missing_files"]))
             self.assertNotIn(".explib/pending/events", "\n".join(payload["missing_dirs"]))
 
     def test_init_explib_rerun_preserves_rendered_domain_rows(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / ".explib"
-            first = self._run_init(root)
+            project_root = Path(tmp) / "project"
+            project_root.mkdir()
+            root = project_root / ".explib"
+            first = self._run_init(project_root)
             self.assertEqual(first.returncode, 0, msg=first.stderr)
 
             index_path = root / "domains" / "api-integration" / "toc.index.json"
@@ -158,7 +168,7 @@ class InitExplibScriptTests(unittest.TestCase):
             ]
             index_path.write_text(json.dumps(index_data, indent=2), encoding="utf-8")
 
-            second = self._run_init(root)
+            second = self._run_init(project_root)
             self.assertEqual(second.returncode, 0, msg=second.stderr)
             toc_path = root / "domains" / "api-integration" / "TOC.md"
             expected_resolved_row = (
@@ -173,7 +183,7 @@ class InitExplibScriptTests(unittest.TestCase):
             self.assertIn(expected_resolved_row, rendered)
             self.assertIn(expected_dead_end_row, rendered)
 
-            third = self._run_init(root)
+            third = self._run_init(project_root)
             self.assertEqual(third.returncode, 0, msg=third.stderr)
             rerendered = toc_path.read_text(encoding="utf-8")
             self.assertIn(expected_resolved_row, rerendered)
@@ -181,64 +191,74 @@ class InitExplibScriptTests(unittest.TestCase):
 
     def test_init_explib_check_mode_reports_missing_domain_index_file(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / ".explib"
-            init = self._run_init(root)
+            project_root = Path(tmp) / "project"
+            project_root.mkdir()
+            root = project_root / ".explib"
+            init = self._run_init(project_root)
             self.assertEqual(init.returncode, 0, msg=init.stderr)
 
             missing_index = root / "domains" / "api-integration" / "toc.index.json"
             missing_index.unlink()
 
-            check = self._run_init(root, check=True)
+            check = self._run_init(project_root, check=True)
             payload = json.loads(check.stdout)
             self.assertEqual(check.returncode, 1)
-            self.assertIn(missing_index.as_posix(), payload["missing_files"])
+            self.assertIn(".explib/domains/api-integration/toc.index.json", payload["missing_files"])
 
     def test_init_explib_check_mode_reports_missing_domain_toc_file(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / ".explib"
-            init = self._run_init(root)
+            project_root = Path(tmp) / "project"
+            project_root.mkdir()
+            root = project_root / ".explib"
+            init = self._run_init(project_root)
             self.assertEqual(init.returncode, 0, msg=init.stderr)
 
             missing_toc = root / "domains" / "api-integration" / "TOC.md"
             missing_toc.unlink()
 
-            check = self._run_init(root, check=True)
+            check = self._run_init(project_root, check=True)
             payload = json.loads(check.stdout)
             self.assertEqual(check.returncode, 1)
-            self.assertIn(missing_toc.as_posix(), payload["missing_files"])
+            self.assertIn(".explib/domains/api-integration/TOC.md", payload["missing_files"])
 
     def test_init_explib_check_mode_reports_drifted_top_level_toc_content(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / ".explib"
-            init = self._run_init(root)
+            project_root = Path(tmp) / "project"
+            project_root.mkdir()
+            root = project_root / ".explib"
+            init = self._run_init(project_root)
             self.assertEqual(init.returncode, 0, msg=init.stderr)
 
             drifted = root / "resolved" / "TOC.md"
             drifted.write_text("# drifted\n", encoding="utf-8")
 
-            check = self._run_init(root, check=True)
+            check = self._run_init(project_root, check=True)
             payload = json.loads(check.stdout)
             self.assertEqual(check.returncode, 1)
-            self.assertIn(drifted.as_posix(), payload["missing_files"])
+            self.assertIn(".explib/resolved/TOC.md", payload["missing_files"])
 
     def test_init_explib_check_mode_reports_drifted_domain_toc_content(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / ".explib"
-            init = self._run_init(root)
+            project_root = Path(tmp) / "project"
+            project_root.mkdir()
+            root = project_root / ".explib"
+            init = self._run_init(project_root)
             self.assertEqual(init.returncode, 0, msg=init.stderr)
 
             drifted = root / "domains" / "api-integration" / "TOC.md"
             drifted.write_text("# drifted\n", encoding="utf-8")
 
-            check = self._run_init(root, check=True)
+            check = self._run_init(project_root, check=True)
             payload = json.loads(check.stdout)
             self.assertEqual(check.returncode, 1)
-            self.assertIn(drifted.as_posix(), payload["missing_files"])
+            self.assertIn(".explib/domains/api-integration/TOC.md", payload["missing_files"])
 
     def test_init_explib_check_mode_reports_invalid_index_shape_without_crashing(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / ".explib"
-            init = self._run_init(root)
+            project_root = Path(tmp) / "project"
+            project_root.mkdir()
+            root = project_root / ".explib"
+            init = self._run_init(project_root)
             self.assertEqual(init.returncode, 0, msg=init.stderr)
 
             invalid_index = root / "domains" / "api-integration" / "toc.index.json"
@@ -253,15 +273,17 @@ class InitExplibScriptTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            check = self._run_init(root, check=True)
+            check = self._run_init(project_root, check=True)
             payload = json.loads(check.stdout)
             self.assertEqual(check.returncode, 1)
-            self.assertIn(invalid_index.as_posix(), payload["missing_files"])
+            self.assertIn(".explib/domains/api-integration/toc.index.json", payload["missing_files"])
 
     def test_init_explib_init_mode_reports_invalid_index_shape_without_crashing(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / ".explib"
-            init = self._run_init(root)
+            project_root = Path(tmp) / "project"
+            project_root.mkdir()
+            root = project_root / ".explib"
+            init = self._run_init(project_root)
             self.assertEqual(init.returncode, 0, msg=init.stderr)
 
             invalid_index = root / "domains" / "api-integration" / "toc.index.json"
@@ -276,11 +298,11 @@ class InitExplibScriptTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            rerun = self._run_init(root)
+            rerun = self._run_init(project_root)
             payload = json.loads(rerun.stdout)
             self.assertEqual(rerun.returncode, 1)
             self.assertEqual(payload["code"], "validation_failed")
-            self.assertIn(invalid_index.as_posix(), payload["missing_files"])
+            self.assertIn(".explib/domains/api-integration/toc.index.json", payload["missing_files"])
 
 
 if __name__ == "__main__":

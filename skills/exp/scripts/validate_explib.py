@@ -1,8 +1,7 @@
 import argparse
 import json
-from pathlib import Path
 
-from _shared_paths import get_root
+from _shared_paths import get_explib_root, get_project_root, to_project_relative
 from _shared_render import render_domain_toc
 from _shared_taxonomy import WORK_DOMAINS
 from _shared_validate import make_issue
@@ -10,20 +9,21 @@ from _shared_validate import make_issue
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", default=".explib")
+    parser.add_argument("--project-root")
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
-    root = get_root(args.root)
+    project_root = get_project_root(args.project_root)
+    explib_root = get_explib_root(project_root)
     issues = []
 
     required_files = [
-        root / "EXP.md",
-        root / "pending" / "TOC.md",
-        root / "resolved" / "TOC.md",
-        root / "dead-ends" / "TOC.md",
+        explib_root / "EXP.md",
+        explib_root / "pending" / "TOC.md",
+        explib_root / "resolved" / "TOC.md",
+        explib_root / "dead-ends" / "TOC.md",
     ]
     for path in required_files:
         if not path.is_file():
@@ -31,31 +31,31 @@ def main():
                 make_issue(
                     "error",
                     "missing_required_file",
-                    path.as_posix(),
+                    to_project_relative(path, project_root),
                     "Required file is missing",
                     ai_action="run_init",
                 )
             )
 
     for domain in WORK_DOMAINS:
-        toc_path = root / "domains" / domain / "TOC.md"
+        toc_path = explib_root / "domains" / domain / "TOC.md"
         if not toc_path.is_file():
             issues.append(
                 make_issue(
                     "error",
                     "missing_domain_toc",
-                    toc_path.as_posix(),
+                    to_project_relative(toc_path, project_root),
                     "Domain TOC file is missing",
                 )
             )
 
-        index_path = root / "domains" / domain / "toc.index.json"
+        index_path = explib_root / "domains" / domain / "toc.index.json"
         if not index_path.is_file():
             issues.append(
                 make_issue(
                     "error",
                     "missing_toc_index",
-                    index_path.as_posix(),
+                    to_project_relative(index_path, project_root),
                     "Domain index file is missing",
                 )
             )
@@ -68,7 +68,7 @@ def main():
                 make_issue(
                     "error",
                     "invalid_index_json",
-                    index_path.as_posix(),
+                    to_project_relative(index_path, project_root),
                     "Domain index file is not valid JSON",
                 )
             )
@@ -79,7 +79,7 @@ def main():
                 make_issue(
                     "error",
                     "invalid_index_json",
-                    index_path.as_posix(),
+                    to_project_relative(index_path, project_root),
                     "Domain index file does not match the expected schema",
                 )
             )
@@ -92,7 +92,7 @@ def main():
                 make_issue(
                     "error",
                     "invalid_index_json",
-                    index_path.as_posix(),
+                    to_project_relative(index_path, project_root),
                     "Domain index file entries must be objects",
                 )
             )
@@ -106,7 +106,7 @@ def main():
                     make_issue(
                         "error",
                         "toc_render_out_of_sync",
-                        toc_path.as_posix(),
+                        to_project_relative(toc_path, project_root),
                         "Domain TOC does not match the rendered index",
                     )
                 )
@@ -115,7 +115,8 @@ def main():
         "ok": not issues,
         "code": "ok" if not issues else "validation_failed",
         "action": "validate_explib",
-        "root": root.as_posix(),
+        "project_root": project_root.as_posix(),
+        "explib_root": explib_root.as_posix(),
         "summary": {
             "error_count": sum(1 for issue in issues if issue["level"] == "error"),
             "warning_count": sum(1 for issue in issues if issue["level"] == "warning"),

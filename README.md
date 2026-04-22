@@ -39,14 +39,16 @@ The second public skill in this repository is [`exp`](./skills/exp/SKILL.md).
 It separates runtime rules from experience content:
 
 - [`skills/exp/SKILL.md`](./skills/exp/SKILL.md): runtime trigger rules, failure triage, retrieval budget, `pending` rules, and promotion rules
-- [`skills/exp/scripts/`](./skills/exp/scripts/): script execution layer for `.explib`, currently covering initialization, validation, and read-side queries
+- [`skills/exp/scripts/`](./skills/exp/scripts/): script execution layer for `.explib`, covering initialization, validation, query, and write-path operations
 - [`.explib/EXP.md`](./.explib/EXP.md): closed taxonomy, navigation, and manual extension rules
 - [`.explib/domains/`](./.explib/domains/): shared domain TOCs for resolved and dead-end experience
+
+The `.explib/` directory belongs to the active project root where the skill is being used, not to the skill installation directory.
 
 ## Repository Structure
 
 - [`skills/prohibition/`](./skills/prohibition/) - the `prohibition` skill and its supporting reference modules
 - [`skills/exp/`](./skills/exp/) - the `exp` skill runtime rules and retrieval behavior
-- [`skills/exp/scripts/`](./skills/exp/scripts/) - `.explib` initialization, validation, and query scripts
+- [`skills/exp/scripts/`](./skills/exp/scripts/) - `.explib` initialization, validation, query, and write-path scripts
 - [`.explib/`](./.explib/): experience-library routing docs, top-level TOCs, and domain navigation
 - [`README.zh-CN.md`](./README.zh-CN.md) - Chinese version of this introduction

@@ -1,27 +1,28 @@
 import argparse
 import json
-from pathlib import Path
 
-from _shared_paths import get_root
+from _shared_paths import get_explib_root, get_project_root, to_project_relative
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", default=".explib")
+    parser.add_argument("--project-root")
     parser.add_argument("--id", required=True)
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
-    root = get_root(args.root)
-    matches = list(root.glob(f"resolved/*/{args.id}.json")) + list(root.glob(f"dead-ends/*/{args.id}.json"))
+    project_root = get_project_root(args.project_root)
+    explib_root = get_explib_root(project_root)
+    matches = list(explib_root.glob(f"resolved/*/{args.id}.json")) + list(explib_root.glob(f"dead-ends/*/{args.id}.json"))
     if not matches:
         print(json.dumps({
             "ok": False,
             "code": "not_found",
             "action": "get_entry",
-            "root": root.as_posix(),
+            "project_root": project_root.as_posix(),
+            "explib_root": explib_root.as_posix(),
             "id": args.id,
         }))
         return 1
@@ -30,7 +31,8 @@ def main():
             "ok": False,
             "code": "ambiguous_id",
             "action": "get_entry",
-            "root": root.as_posix(),
+            "project_root": project_root.as_posix(),
+            "explib_root": explib_root.as_posix(),
             "id": args.id,
         }))
         return 1
@@ -41,9 +43,10 @@ def main():
         "ok": True,
         "code": "ok",
         "action": "get_entry",
-        "root": root.as_posix(),
+        "project_root": project_root.as_posix(),
+        "explib_root": explib_root.as_posix(),
         "id": args.id,
-        "entry_path": path.as_posix(),
+        "entry_path": to_project_relative(path, project_root),
         "kind": entry["kind"],
         "work_domain": entry["work_domain"],
         "failure_kind": entry["failure_kind"],

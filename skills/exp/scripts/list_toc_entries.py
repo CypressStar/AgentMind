@@ -2,12 +2,12 @@ import argparse
 import json
 
 from _shared_index import load_domain_index
-from _shared_paths import get_root
+from _shared_paths import get_domain_index_path, get_explib_root, get_project_root
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", default=".explib")
+    parser.add_argument("--project-root")
     parser.add_argument("--domain", required=True)
     parser.add_argument("--section", choices=["resolved", "dead_end"])
     parser.add_argument("--failure-kind")
@@ -16,8 +16,9 @@ def parse_args():
 
 def main():
     args = parse_args()
-    root = get_root(args.root)
-    index_path = root / "domains" / args.domain / "toc.index.json"
+    project_root = get_project_root(args.project_root)
+    explib_root = get_explib_root(project_root)
+    index_path = get_domain_index_path(project_root, args.domain)
     data = load_domain_index(index_path)
 
     entries = []
@@ -39,7 +40,8 @@ def main():
         "ok": True,
         "code": "ok",
         "action": "list_toc_entries",
-        "root": root.as_posix(),
+        "project_root": project_root.as_posix(),
+        "explib_root": explib_root.as_posix(),
         "domain": args.domain,
         "section": args.section,
         "filters": {"failure_kind": args.failure_kind},
