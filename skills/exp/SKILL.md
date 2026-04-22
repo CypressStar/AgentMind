@@ -13,6 +13,22 @@ Read taxonomy and navigation from [`../../.explib/EXP.md`](../../.explib/EXP.md)
 
 This skill is passive. It does not preload experience during normal work.
 
+## Script Usage
+
+Use the scripts in [`scripts/`](./scripts/) as the execution layer for `.explib`.
+
+Default order:
+
+1. Run `init_explib.py` to create or repair the fixed `.explib` skeleton.
+2. Run `validate_explib.py` before relying on library state.
+3. For retrieval, use `list_toc_entries.py` to get structured candidates.
+4. After choosing a candidate, use `get_entry.py` for the final entry payload.
+
+Do not treat `TOC.md` as the primary machine-readable source when the scripts are available.
+Use script output first, and fall back to direct file reading only when needed.
+
+If `validate_explib.py` reports blocking issues, stop relying on `.explib` until the library state is corrected.
+
 ## Trigger Rules
 
 - Use when a clear failure has already happened.
@@ -27,16 +43,21 @@ This skill is passive. It does not preload experience during normal work.
 2. Split the problem into failure clusters.
 3. For each independent cluster, route through `.explib/EXP.md`.
 4. Enter one `work_domain`.
-5. Read one relevant domain `TOC.md`.
+5. Use `list_toc_entries.py` for structured candidates in that domain.
 6. Read at most three formal entries per failure cluster.
-7. If no formal hit exists, read at most one similar `pending` item.
-8. Reuse the fix, stop a dead path, or create/update `pending`.
+7. Use `get_entry.py` for the chosen entry payload.
+8. If no formal hit exists, read at most one similar `pending` item directly.
+9. Reuse the fix or stop a dead path.
+
+Note:
+- Scripted write-path operations for `pending`, promotion, abandonment, and dead-end deletion are not available yet.
+- Do not improvise partial write automation in this skill until those scripts exist.
 
 ## Review Mode
 
 - Review mode is read-only.
 - Do not read `pending` in review mode.
-- Read only `.explib/EXP.md`, relevant TOCs, and formal entries.
+- Read `.explib/EXP.md`, then use `list_toc_entries.py` and `get_entry.py` when possible.
 - If the user asks for all experience, default to a high-level summary by `work_domain`.
 - Expand specific entries only when the user asks for that domain or entry.
 
@@ -46,6 +67,8 @@ This skill is passive. It does not preload experience during normal work.
 - Keep one active event per same-task ongoing issue.
 - Open a new event for a similar issue in a different task.
 - Re-read `.explib` only when the root-cause guess, `work_domain`, or retrieval evidence materially changes.
+- Until write-path scripts exist, do not treat `pending` creation or updates as an automated script workflow.
+- If pending state must be discussed, keep it conceptual rather than pretending the script layer already supports it.
 
 ## Promotion Rules
 
